@@ -26,6 +26,7 @@ type EnterRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	StateNumber   string                 `protobuf:"bytes,1,opt,name=state_number,json=stateNumber,proto3" json:"state_number,omitempty"` // Car state number.
 	EnteredAt     *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=entered_at,json=enteredAt,proto3" json:"entered_at,omitempty"`       // Time when the car entered the parking.
+	ParkingId     string                 `protobuf:"bytes,3,opt,name=parking_id,json=parkingId,proto3" json:"parking_id,omitempty"`       // Parking ID.
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -74,10 +75,18 @@ func (x *EnterRequest) GetEnteredAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *EnterRequest) GetParkingId() string {
+	if x != nil {
+		return x.ParkingId
+	}
+	return ""
+}
+
 type ExitRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	StateNumber   string                 `protobuf:"bytes,1,opt,name=state_number,json=stateNumber,proto3" json:"state_number,omitempty"` // Car state number.
 	ExitedAt      *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=exited_at,json=exitedAt,proto3" json:"exited_at,omitempty"`          // Time when the car exited the parking.
+	ParkingId     string                 `protobuf:"bytes,3,opt,name=parking_id,json=parkingId,proto3" json:"parking_id,omitempty"`       // Parking ID.
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -126,9 +135,17 @@ func (x *ExitRequest) GetExitedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *ExitRequest) GetParkingId() string {
+	if x != nil {
+		return x.ParkingId
+	}
+	return ""
+}
+
 type CalculatePriceRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	StateNumber   string                 `protobuf:"bytes,1,opt,name=state_number,json=stateNumber,proto3" json:"state_number,omitempty"` // Car state number.
+	ParkingId     string                 `protobuf:"bytes,2,opt,name=parking_id,json=parkingId,proto3" json:"parking_id,omitempty"`       // Parking ID.
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -166,6 +183,13 @@ func (*CalculatePriceRequest) Descriptor() ([]byte, []int) {
 func (x *CalculatePriceRequest) GetStateNumber() string {
 	if x != nil {
 		return x.StateNumber
+	}
+	return ""
+}
+
+func (x *CalculatePriceRequest) GetParkingId() string {
+	if x != nil {
+		return x.ParkingId
 	}
 	return ""
 }
@@ -217,6 +241,7 @@ func (x *CalculatePriceResponse) GetCost() int64 {
 type GetCarSessionsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	StateNumber   string                 `protobuf:"bytes,1,opt,name=state_number,json=stateNumber,proto3" json:"state_number,omitempty"` // Car state number.
+	ParkingId     string                 `protobuf:"bytes,2,opt,name=parking_id,json=parkingId,proto3" json:"parking_id,omitempty"`       // Parking ID.
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -258,8 +283,16 @@ func (x *GetCarSessionsRequest) GetStateNumber() string {
 	return ""
 }
 
+func (x *GetCarSessionsRequest) GetParkingId() string {
+	if x != nil {
+		return x.ParkingId
+	}
+	return ""
+}
+
 type GetActiveSessionsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	ParkingId     string                 `protobuf:"bytes,1,opt,name=parking_id,json=parkingId,proto3" json:"parking_id,omitempty"` // Parking ID.
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -294,14 +327,22 @@ func (*GetActiveSessionsRequest) Descriptor() ([]byte, []int) {
 	return file_proto_parking_parking_proto_rawDescGZIP(), []int{5}
 }
 
+func (x *GetActiveSessionsRequest) GetParkingId() string {
+	if x != nil {
+		return x.ParkingId
+	}
+	return ""
+}
+
 type ParkingSession struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`                                      // Session ID.
-	StateNumber   string                 `protobuf:"bytes,2,opt,name=state_number,json=stateNumber,proto3" json:"state_number,omitempty"` // Car state number.
-	EnteredAt     *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=entered_at,json=enteredAt,proto3" json:"entered_at,omitempty"`       // Time when the car entered the parking.
-	ExitedAt      *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=exited_at,json=exitedAt,proto3" json:"exited_at,omitempty"`          // Time when the car exited the parking.
-	Cost          int64                  `protobuf:"varint,5,opt,name=cost,proto3" json:"cost,omitempty"`                                 // Cost parking in kopecks.
-	Paid          bool                   `protobuf:"varint,6,opt,name=paid,proto3" json:"paid,omitempty"`                                 // Session is paid.
+	ParkingId     string                 `protobuf:"bytes,2,opt,name=parking_id,json=parkingId,proto3" json:"parking_id,omitempty"`       // Parking ID.
+	StateNumber   string                 `protobuf:"bytes,3,opt,name=state_number,json=stateNumber,proto3" json:"state_number,omitempty"` // Car state number.
+	EnteredAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=entered_at,json=enteredAt,proto3" json:"entered_at,omitempty"`       // Time when the car entered the parking.
+	ExitedAt      *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=exited_at,json=exitedAt,proto3" json:"exited_at,omitempty"`          // Time when the car exited the parking.
+	Cost          int64                  `protobuf:"varint,6,opt,name=cost,proto3" json:"cost,omitempty"`                                 // Cost parking in kopecks.
+	Paid          bool                   `protobuf:"varint,7,opt,name=paid,proto3" json:"paid,omitempty"`                                 // Session is paid.
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -339,6 +380,13 @@ func (*ParkingSession) Descriptor() ([]byte, []int) {
 func (x *ParkingSession) GetId() string {
 	if x != nil {
 		return x.Id
+	}
+	return ""
+}
+
+func (x *ParkingSession) GetParkingId() string {
+	if x != nil {
+		return x.ParkingId
 	}
 	return ""
 }
@@ -382,29 +430,41 @@ var File_proto_parking_parking_proto protoreflect.FileDescriptor
 
 const file_proto_parking_parking_proto_rawDesc = "" +
 	"\n" +
-	"\x1bproto/parking/parking.proto\x12\aparking\x1a\x1fgoogle/protobuf/timestamp.proto\"l\n" +
+	"\x1bproto/parking/parking.proto\x12\aparking\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8b\x01\n" +
 	"\fEnterRequest\x12!\n" +
 	"\fstate_number\x18\x01 \x01(\tR\vstateNumber\x129\n" +
 	"\n" +
-	"entered_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\tenteredAt\"i\n" +
+	"entered_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\tenteredAt\x12\x1d\n" +
+	"\n" +
+	"parking_id\x18\x03 \x01(\tR\tparkingId\"\x88\x01\n" +
 	"\vExitRequest\x12!\n" +
 	"\fstate_number\x18\x01 \x01(\tR\vstateNumber\x127\n" +
-	"\texited_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\bexitedAt\":\n" +
-	"\x15CalculatePriceRequest\x12!\n" +
-	"\fstate_number\x18\x01 \x01(\tR\vstateNumber\",\n" +
-	"\x16CalculatePriceResponse\x12\x12\n" +
-	"\x04cost\x18\x01 \x01(\x03R\x04cost\":\n" +
-	"\x15GetCarSessionsRequest\x12!\n" +
-	"\fstate_number\x18\x01 \x01(\tR\vstateNumber\"\x1a\n" +
-	"\x18GetActiveSessionsRequest\"\xdf\x01\n" +
-	"\x0eParkingSession\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12!\n" +
-	"\fstate_number\x18\x02 \x01(\tR\vstateNumber\x129\n" +
+	"\texited_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\bexitedAt\x12\x1d\n" +
 	"\n" +
-	"entered_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tenteredAt\x127\n" +
-	"\texited_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\bexitedAt\x12\x12\n" +
-	"\x04cost\x18\x05 \x01(\x03R\x04cost\x12\x12\n" +
-	"\x04paid\x18\x06 \x01(\bR\x04paid2\xec\x02\n" +
+	"parking_id\x18\x03 \x01(\tR\tparkingId\"Y\n" +
+	"\x15CalculatePriceRequest\x12!\n" +
+	"\fstate_number\x18\x01 \x01(\tR\vstateNumber\x12\x1d\n" +
+	"\n" +
+	"parking_id\x18\x02 \x01(\tR\tparkingId\",\n" +
+	"\x16CalculatePriceResponse\x12\x12\n" +
+	"\x04cost\x18\x01 \x01(\x03R\x04cost\"Y\n" +
+	"\x15GetCarSessionsRequest\x12!\n" +
+	"\fstate_number\x18\x01 \x01(\tR\vstateNumber\x12\x1d\n" +
+	"\n" +
+	"parking_id\x18\x02 \x01(\tR\tparkingId\"9\n" +
+	"\x18GetActiveSessionsRequest\x12\x1d\n" +
+	"\n" +
+	"parking_id\x18\x01 \x01(\tR\tparkingId\"\xfe\x01\n" +
+	"\x0eParkingSession\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
+	"\n" +
+	"parking_id\x18\x02 \x01(\tR\tparkingId\x12!\n" +
+	"\fstate_number\x18\x03 \x01(\tR\vstateNumber\x129\n" +
+	"\n" +
+	"entered_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tenteredAt\x127\n" +
+	"\texited_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\bexitedAt\x12\x12\n" +
+	"\x04cost\x18\x06 \x01(\x03R\x04cost\x12\x12\n" +
+	"\x04paid\x18\a \x01(\bR\x04paid2\xec\x02\n" +
 	"\aParking\x127\n" +
 	"\x05Enter\x12\x15.parking.EnterRequest\x1a\x17.parking.ParkingSession\x125\n" +
 	"\x04Exit\x12\x14.parking.ExitRequest\x1a\x17.parking.ParkingSession\x12Q\n" +

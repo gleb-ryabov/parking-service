@@ -17,15 +17,18 @@ service Parking {
 message EnterRequest {
     string state_number = 1;  // Car state number.
     google.protobuf.Timestamp entered_at = 2;  // Time when the car entered the parking.
+    string parking_id = 3; // Parking ID.
 }
 
 message ExitRequest{
     string state_number = 1;  // Car state number.
     google.protobuf.Timestamp exited_at = 2;  // Time when the car exited the parking.
+    string parking_id = 3; // Parking ID.
 }
 
 message CalculatePriceRequest{
     string state_number = 1;  // Car state number.
+    string parking_id = 2; // Parking ID.
 }
 
 message CalculatePriceResponse{
@@ -34,15 +37,19 @@ message CalculatePriceResponse{
 
 message GetCarSessionsRequest{
     string state_number = 1;  // Car state number.
+    string parking_id = 2; // Parking ID.
 }
 
-message GetActiveSessionsRequest{}
+message GetActiveSessionsRequest{
+    string parking_id = 1; // Parking ID.
+}
 
 message ParkingSession {
     string id = 1; // Session ID.
-    string state_number = 2; // Car state number.
-    google.protobuf.Timestamp entered_at = 3; // Time when the car entered the parking.
-    google.protobuf.Timestamp exited_at = 4;  // Time when the car exited the parking.
-    int64 cost = 5; // Cost parking in kopecks.
-    bool paid = 6; // Session is paid.
+    string parking_id = 2; // Parking ID.
+    string state_number = 3; // Car state number.
+    google.protobuf.Timestamp entered_at = 4; // Time when the car entered the parking.
+    google.protobuf.Timestamp exited_at = 5;  // Time when the car exited the parking.
+    int64 cost = 6; // Cost parking in kopecks.
+    bool paid = 7; // Session is paid.
 }
