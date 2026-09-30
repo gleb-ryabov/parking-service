@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package parking;
+
+option go_package = "parking.v1;parkingv1";
+
+service Parking {
+    rpc Enter (EnterRequest) returns (ParkingSession);
+    rpc Exit (ExitRequest) returns (ParkingSession);
+    rpc CalculatePrice(CalculatePriceRequest) returns (CalculatePriceResponse);
+    rpc GetCarSessions (GetCarSessionsRequest) returns (stream ParkingSession);
+    rpc GetActiveSessions(GetActiveSessionsRequest) returns (stream ParkingSession);
+}
+
+message EnterRequest {
+    string state_number = 1;  // Car state number.
+    google.protobuf.Timestamp entered_at = 2;  // Time when the car entered the parking.
+}
+
+message ExitRequest{
+    string state_number = 1;  // Car state number.
+    google.protobuf.Timestamp exited_at = 2;  // Time when the car exited the parking.
+}
+
+message CalculatePriceRequest{
+    string state_number = 1;  // Car state number.
+}
+
+message CalculatePriceResponse{
+    int64 cost = 1; // Cost parking in kopecks.
+}
+
+message GetCarSessionsRequest{
+    string state_number = 1;  // Car state number.
+}
+
+message GetActiveSessionsRequest{}
+
+message ParkingSession {
+    string id = 1; // Session ID.
+    string state_number = 2; // Car state number.
+    google.protobuf.Timestamp entered_at = 3; // Time when the car entered the parking.
+    google.protobuf.Timestamp exited_at = 4;  // Time when the car exited the parking.
+    int64 cost = 5; // Cost parking in kopecks.
+    bool paid = 6; // Session is paid.
+}
