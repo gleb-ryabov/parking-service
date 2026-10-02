@@ -10,7 +10,7 @@ import (
 
 // Config represent app settings.
 type Config struct {
-	Env   string     `yaml:"env"`
+	Log   LogConfig  `yaml:"log"`
 	DbURL string     `yaml:"db_url"`
 	GRPS  GRPCConfig `yaml:"grpc"`
 }
@@ -19,6 +19,14 @@ type Config struct {
 type GRPCConfig struct {
 	Port    int           `yaml:"port"`
 	Timeout time.Duration `yaml:"timeout"`
+}
+
+// LogConfig represents logging config.
+type LogConfig struct {
+	Level      string `yaml:"level"`
+	FileName   string `yaml:"file"`
+	MaxAge     int    `yaml:"maxAge"`
+	MaxBackups int    `yaml:"maxBackups"`
 }
 
 // MustLoad loads config by env/flag path or panic.

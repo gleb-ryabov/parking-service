@@ -1,0 +1,10 @@
+db_url: "postgres://postgres:postgres@localhost:5432/app"
+
+grpc:
+  port: 50051
+  timeout: 5s
+
+log:
+  level: info
+  maxAge: 7
+  maxBackups: 5
