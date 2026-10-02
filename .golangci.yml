@@ -1,0 +1,75 @@
+version: "2"
+
+linters:
+  default: fast
+  enable:
+    - revive
+    - govet
+    - protogetter # работа с прото-файлами
+    - errorlint      # Для корректной работы с ошибками в Go
+    - nilnil         # Ловит некорректное использование nil
+  disable:
+    - wsl 
+    - depguard # Импорты
+    - unqueryvet # Заставляет переписывать все поля из бд руками
+    - tagalign #  Заставляет выравнивать в столбик теги у структур
+    - testpackage # Не дает тестить непубличные методы пакета
+    - godox # Не дает использовать TODO
+  exclusions:
+    generated: lax
+  settings:
+    cyclop:
+      max-complexity: 14
+    govet:
+      enable-all: true
+      disable:
+        - fieldalignment
+      settings:
+        shadow:
+          strict:
+            true
+    revive:
+      enable-default-rules: true
+      rules:
+        - name: package-comments
+          severity: warning
+          disabled: true
+          exclude: [""]
+        - name: exported
+          arguments:
+            - "check-public-interface"
+
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - golines
+  settings:
+    gci:
+      sections:
+        - standard
+        - default
+        - blank
+        - prefix(gitlab.globars.ru)
+        - localmodule
+    gofmt:
+      simplify: false
+      rewrite-rules:
+        - pattern: 'interface{}'
+          replacement: 'any'
+        - pattern: 'a[b:len(a)]'
+          replacement: 'a[b:]'
+    golines:
+      max-len: 120
+      reformat-tags: false
+
+run:
+  timeout: 5m
+  modules-download-mode: readonly
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  exclude-dirs:
+    - vendor
+    - generated
