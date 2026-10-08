@@ -1,18 +1,26 @@
 package main
 
 import (
-	"parking/internal/config"
-	"parking/pkg/logger"
+	"context"
+	"os"
+	"os/signal"
+	"syscall"
+
+	"parking/internal/app"
 )
 
 func main() {
-	cfg := config.MustLoad()
-
-	log := logger.NewLogger(
-		cfg.Log.Level,
-		cfg.Log.FileName,
-		cfg.Log.MaxAge,
-		cfg.Log.MaxBackups,
+	ctx, cancel := signal.NotifyContext(
+		context.Background(),
+		os.Interrupt,
+		syscall.SIGTERM,
 	)
-	_ = log
+	defer cancel()
+
+	appl := app.New(ctx)
+
+	appl.MustRun()
+
+	<-ctx.Done()
+	appl.Stop()
 }

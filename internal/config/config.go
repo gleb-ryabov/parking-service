@@ -12,7 +12,13 @@ import (
 type Config struct {
 	Log   LogConfig  `yaml:"log"`
 	DbURL string     `yaml:"db_url"`
-	GRPS  GRPCConfig `yaml:"grpc"`
+	HTTP  HTTPConfig `yaml:"http"`
+	GRPC  GRPCConfig `yaml:"grpc"`
+}
+
+// HTTPConfig represents HTTP config.
+type HTTPConfig struct {
+	Port int `yaml:"port"`
 }
 
 // GRPCConfig represents GRPC config.
