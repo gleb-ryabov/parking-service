@@ -7,6 +7,8 @@ import (
 
 	"github.com/rs/zerolog"
 	"google.golang.org/grpc"
+
+	parkinggrpc "parking/internal/grpc/parking"
 )
 
 // App is struct for gRPC server.
@@ -23,7 +25,8 @@ func New(
 ) *App {
 	gRPCServer := grpc.NewServer()
 
-	// todo: add Register()
+	// TODO: add service
+	parkinggrpc.Register(gRPCServer, nil)
 
 	return &App{
 		log:        log,
