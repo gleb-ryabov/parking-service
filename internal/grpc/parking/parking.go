@@ -21,14 +21,14 @@ type Service interface {
 		stateNumber string,
 		openedAt time.Time,
 		parkingID uuid.UUID,
-	) (domain.ParkingSession, error)
+	) (*domain.ParkingSession, error)
 	// CloseSession finishes a parking session when a car exits the parking.
 	CloseSession(
 		ctx context.Context,
 		stateNumber string,
 		closedAt time.Time,
 		parkingID uuid.UUID,
-	) (domain.ParkingSession, error)
+	) (*domain.ParkingSession, error)
 	// CalculatePrice calculates a parking price.
 	CalculatePrice(ctx context.Context, stateNumber string, parkingID uuid.UUID) (int64, error)
 	// GetSessionsByCarNumber finds parking sessions by the car state number.
@@ -36,9 +36,9 @@ type Service interface {
 		ctx context.Context,
 		stateNumber string,
 		parkingID uuid.UUID,
-	) ([]domain.ParkingSession, error)
+	) ([]*domain.ParkingSession, error)
 	// GetActiveSessionsByParking finds active parking sessions by the parking ID.
-	GetActiveSessionsByParking(ctx context.Context, parkingID uuid.UUID) ([]domain.ParkingSession, error)
+	GetActiveSessionsByParking(ctx context.Context, parkingID uuid.UUID) ([]*domain.ParkingSession, error)
 }
 
 type serverAPI struct {
@@ -154,7 +154,7 @@ func (s *serverAPI) GetActiveSessions(
 
 func (s *serverAPI) sendSessions(
 	stream grpc.ServerStreamingServer[parkingv1.ParkingSession],
-	sessions []domain.ParkingSession,
+	sessions []*domain.ParkingSession,
 ) error {
 	for _, session := range sessions {
 		if err := stream.Send(toProtoSession(session)); err != nil {

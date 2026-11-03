@@ -10,7 +10,7 @@ import (
 )
 
 // toProtoSession converts a domain ParkingSession to a protobuf ParkingSession.
-func toProtoSession(session domain.ParkingSession) *parkingv1.ParkingSession {
+func toProtoSession(session *domain.ParkingSession) *parkingv1.ParkingSession {
 	pb := &parkingv1.ParkingSession{
 		Id:          session.ID.String(),
 		ParkingId:   session.ParkingID.String(),
@@ -32,15 +32,15 @@ func toProtoSession(session domain.ParkingSession) *parkingv1.ParkingSession {
 }
 
 // toDomainSession converts a protobuf ParkingSession to a domain ParkingSession.
-func toDomainSession(pb *parkingv1.ParkingSession) (domain.ParkingSession, error) {
+func toDomainSession(pb *parkingv1.ParkingSession) (*domain.ParkingSession, error) {
 	id, err := uuid.Parse(pb.GetId())
 	if err != nil {
-		return domain.ParkingSession{}, err
+		return nil, err
 	}
 
 	parkingID, err := uuid.Parse(pb.GetParkingId())
 	if err != nil {
-		return domain.ParkingSession{}, err
+		return nil, err
 	}
 
 	session := domain.ParkingSession{
@@ -62,5 +62,5 @@ func toDomainSession(pb *parkingv1.ParkingSession) (domain.ParkingSession, error
 	cost := pb.GetCost()
 	session.Cost = &cost
 
-	return session, nil
+	return &session, nil
 }
