@@ -10,6 +10,7 @@ import (
 	grpcapp "parking/internal/app/grpc"
 	httpapp "parking/internal/app/http"
 	"parking/internal/config"
+	"parking/internal/service/parking"
 	"parking/pkg/logger"
 )
 
@@ -37,7 +38,10 @@ func New(ctx context.Context) *App {
 	)
 	l.Info().Str("level", l.GetLevel().String()).Msg("logger initialized")
 
-	grpcApp := grpcapp.New(l, cfg.GRPC.Port)
+	// TODO : add repo
+	parkingS := parking.New(l, nil)
+
+	grpcApp := grpcapp.New(l, parkingS, cfg.GRPC.Port)
 	httpApp := httpapp.New(l, cfg.HTTP.Port)
 
 	return &App{

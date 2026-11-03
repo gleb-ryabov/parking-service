@@ -21,12 +21,12 @@ type App struct {
 // New returns app for gRPC server.
 func New(
 	log *zerolog.Logger,
+	parkingService parkinggrpc.Service,
 	port int,
 ) *App {
 	gRPCServer := grpc.NewServer()
 
-	// TODO: add service
-	parkinggrpc.Register(gRPCServer, nil)
+	parkinggrpc.Register(gRPCServer, parkingService)
 
 	return &App{
 		log:        log,
