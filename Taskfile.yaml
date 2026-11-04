@@ -9,3 +9,7 @@ tasks:
     desc: "run app with local config"
     cmds:
       - go run ./cmd/parking -config="config/local.yaml"
+  run-migrate-local:
+    desc: "run migrate with local config"
+    cmds:
+      - go run ./cmd/migrate -config="config/local.yaml"
