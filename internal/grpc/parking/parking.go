@@ -11,6 +11,7 @@ import (
 
 	parkingv1 "parking/gen/go/proto/parking"
 	"parking/internal/domain"
+	grpcsvc "parking/internal/grpc"
 )
 
 // Service defines parking business operations.
@@ -68,7 +69,7 @@ func (s *serverAPI) Enter(
 
 	session, err := s.service.OpenSession(ctx, req.GetStateNumber(), req.GetEnteredAt().AsTime(), parkingID)
 	if err != nil {
-		return nil, status.Error(codes.Internal, "internal server error")
+		return nil, grpcsvc.MapError(err)
 	}
 
 	return toProtoSession(session), nil
@@ -86,7 +87,7 @@ func (s *serverAPI) Exit(
 
 	session, err := s.service.CloseSession(ctx, req.GetStateNumber(), req.GetExitedAt().AsTime(), parkingID)
 	if err != nil {
-		return nil, status.Error(codes.Internal, "internal server error")
+		return nil, grpcsvc.MapError(err)
 	}
 
 	return toProtoSession(session), nil
@@ -104,7 +105,7 @@ func (s *serverAPI) CalculatePrice(
 
 	cost, err := s.service.CalculatePrice(ctx, req.GetStateNumber(), parkingID)
 	if err != nil {
-		return nil, status.Error(codes.Internal, "internal server error")
+		return nil, grpcsvc.MapError(err)
 	}
 
 	return &parkingv1.CalculatePriceResponse{
@@ -124,7 +125,7 @@ func (s *serverAPI) GetCarSessions(
 
 	sessions, err := s.service.GetSessionsByCarNumber(stream.Context(), req.GetStateNumber(), parkingID)
 	if err != nil {
-		return status.Error(codes.Internal, "internal server error")
+		return grpcsvc.MapError(err)
 	}
 
 	s.sendSessions(stream, sessions)
@@ -144,7 +145,7 @@ func (s *serverAPI) GetActiveSessions(
 
 	sessions, err := s.service.GetActiveSessionsByParking(stream.Context(), parkingID)
 	if err != nil {
-		return status.Error(codes.Internal, "internal server error")
+		return grpcsvc.MapError(err)
 	}
 
 	s.sendSessions(stream, sessions)

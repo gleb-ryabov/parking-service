@@ -15,7 +15,7 @@ func MapError(err error, op string) error {
 		return nil
 	}
 
-	mappedErr := err
+	var mappedErr error
 
 	switch {
 	case errors.Is(err, gorm.ErrRecordNotFound):
@@ -41,7 +41,9 @@ func MapError(err error, op string) error {
 		mappedErr = repo.ErrNotImplemented
 	case errors.Is(err, gorm.ErrUnsupportedDriver):
 		mappedErr = repo.ErrUnsupportedDriver
+	default:
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
-	return fmt.Errorf("%s: %w", op, mappedErr)
+	return fmt.Errorf("%s: %w: %w", op, mappedErr, err)
 }

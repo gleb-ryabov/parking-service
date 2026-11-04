@@ -74,9 +74,7 @@ func (s *service) OpenSession(
 
 	result, err := s.parkingRepo.CreateSession(ctx, session)
 	if err != nil {
-		log.Error().Err(err).Msg("failed to create parking session")
-
-		return nil, svc.MapError(err)
+		return nil, svc.MapError(err, &log, "failed to create parking session")
 	}
 
 	log.Debug().Str("sessionID", result.ID.String()).Msg("parking session created")
@@ -102,9 +100,7 @@ func (s *service) CloseSession(
 
 	session, err := s.parkingRepo.CloseSession(ctx, stateNumber, closedAt, parkingID)
 	if err != nil {
-		log.Error().Err(err).Msg("failed to close parking session")
-
-		return nil, svc.MapError(err)
+		return nil, svc.MapError(err, &log, "failed to close parking session")
 	}
 
 	log.Debug().Str("session_id", session.ID.String()).Msg("parking session closed")
@@ -128,9 +124,7 @@ func (s *service) GetSessionsByCarNumber(
 
 	sessions, err := s.parkingRepo.GetSessionsByCarNumber(ctx, stateNumber, parkingID)
 	if err != nil {
-		log.Error().Err(err).Msg("failed to get parking sessions")
-
-		return nil, svc.MapError(err)
+		return nil, svc.MapError(err, &log, "failed to get parking sessions")
 	}
 
 	log.Debug().Msg("parking sessions retrieved")
@@ -152,9 +146,7 @@ func (s *service) GetActiveSessionsByParking(
 
 	sessions, err := s.parkingRepo.GetActiveSessionsByParking(ctx, parkingID)
 	if err != nil {
-		log.Error().Err(err).Msg("failed to get parking sessions")
-
-		return nil, svc.MapError(err)
+		return nil, svc.MapError(err, &log, "failed to get parking sessions")
 	}
 
 	log.Debug().Msg("parking sessions retrieved")
