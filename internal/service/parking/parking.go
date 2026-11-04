@@ -14,12 +14,7 @@ import (
 // Repository defines data access operations for parking.
 type Repository interface {
 	// CreateSession makes parking session in DB.
-	CreateSession(
-		ctx context.Context,
-		stateNumber string,
-		openedAt time.Time,
-		parkingID uuid.UUID,
-	) (*domain.ParkingSession, error)
+	CreateSession(ctx context.Context, session domain.ParkingSession) (*domain.ParkingSession, error)
 	// CloseSession sets the exit time for a parking session.
 	CloseSession(
 		ctx context.Context,
@@ -32,9 +27,9 @@ type Repository interface {
 		ctx context.Context,
 		stateNumber string,
 		parkingID uuid.UUID,
-	) ([]*domain.ParkingSession, error)
+	) ([]domain.ParkingSession, error)
 	// GetActiveSessionsByParking returns active parking sessions by the parking ID.
-	GetActiveSessionsByParking(ctx context.Context, parkingID uuid.UUID) ([]*domain.ParkingSession, error)
+	GetActiveSessionsByParking(ctx context.Context, parkingID uuid.UUID) ([]domain.ParkingSession, error)
 }
 
 // service provides business logic for parking.
@@ -70,16 +65,23 @@ func (s *service) OpenSession(
 		Str("opened_at", openedAt.Format(time.RFC3339)).
 		Logger()
 
-	session, err := s.parkingRepo.CreateSession(ctx, stateNumber, openedAt, parkingID)
+	session := domain.ParkingSession{
+		ID:          uuid.New(),
+		ParkingID:   parkingID,
+		StateNumber: stateNumber,
+		EnteredAt:   openedAt,
+	}
+
+	result, err := s.parkingRepo.CreateSession(ctx, session)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to create parking session")
 
 		return nil, svc.MapError(err)
 	}
 
-	log.Debug().Str("sessionID", session.ID.String()).Msg("parking session created")
+	log.Debug().Str("sessionID", result.ID.String()).Msg("parking session created")
 
-	return session, nil
+	return result, nil
 }
 
 // CloseSession finishes a parking session when a car exits the parking.
@@ -115,7 +117,7 @@ func (s *service) GetSessionsByCarNumber(
 	ctx context.Context,
 	stateNumber string,
 	parkingID uuid.UUID,
-) ([]*domain.ParkingSession, error) {
+) ([]domain.ParkingSession, error) {
 	const op = "service.parking.GetSessionsByCarNumber"
 
 	log := s.logger.With().
@@ -140,7 +142,7 @@ func (s *service) GetSessionsByCarNumber(
 func (s *service) GetActiveSessionsByParking(
 	ctx context.Context,
 	parkingID uuid.UUID,
-) ([]*domain.ParkingSession, error) {
+) ([]domain.ParkingSession, error) {
 	const op = "service.parking.GetActiveSessionsByParking"
 
 	log := s.logger.With().

@@ -36,9 +36,9 @@ type Service interface {
 		ctx context.Context,
 		stateNumber string,
 		parkingID uuid.UUID,
-	) ([]*domain.ParkingSession, error)
+	) ([]domain.ParkingSession, error)
 	// GetActiveSessionsByParking finds active parking sessions by the parking ID.
-	GetActiveSessionsByParking(ctx context.Context, parkingID uuid.UUID) ([]*domain.ParkingSession, error)
+	GetActiveSessionsByParking(ctx context.Context, parkingID uuid.UUID) ([]domain.ParkingSession, error)
 }
 
 type serverAPI struct {
@@ -154,10 +154,10 @@ func (s *serverAPI) GetActiveSessions(
 
 func (s *serverAPI) sendSessions(
 	stream grpc.ServerStreamingServer[parkingv1.ParkingSession],
-	sessions []*domain.ParkingSession,
+	sessions []domain.ParkingSession,
 ) error {
 	for _, session := range sessions {
-		if err := stream.Send(toProtoSession(session)); err != nil {
+		if err := stream.Send(toProtoSession(&session)); err != nil {
 			return err
 		}
 	}

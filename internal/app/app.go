@@ -10,7 +10,9 @@ import (
 	grpcapp "parking/internal/app/grpc"
 	httpapp "parking/internal/app/http"
 	"parking/internal/config"
-	"parking/internal/service/parking"
+	parkingRepo "parking/internal/repository/parking/gorm"
+	parkingService "parking/internal/service/parking"
+	"parking/internal/storage/postgres"
 	"parking/pkg/logger"
 )
 
@@ -38,8 +40,15 @@ func New(ctx context.Context) *App {
 	)
 	l.Info().Str("level", l.GetLevel().String()).Msg("logger initialized")
 
-	// TODO : add repo
-	parkingS := parking.New(l, nil)
+	db, err := postgres.New(ctx, l, cfg.DbURL)
+	if err != nil {
+		l.Fatal().Err(err).Msg("failed to connect db")
+	}
+	l.Info().Msg("db connected")
+
+	parkingR := parkingRepo.New(db.DB)
+
+	parkingS := parkingService.New(l, parkingR)
 
 	grpcApp := grpcapp.New(l, parkingS, cfg.GRPC.Port)
 	httpApp := httpapp.New(l, cfg.HTTP.Port)
