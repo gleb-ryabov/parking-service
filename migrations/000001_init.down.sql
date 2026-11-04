@@ -1,0 +1,1 @@
+DROP table parking_sessions;
