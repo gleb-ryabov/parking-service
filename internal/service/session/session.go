@@ -1,4 +1,4 @@
-package parking
+package session
 
 import (
 	"context"
@@ -11,34 +11,34 @@ import (
 	svc "parking/internal/service"
 )
 
-// Repository defines data access operations for parking.
+// Repository defines data access operations for session.
 type Repository interface {
 	// CreateSession makes parking session in DB.
-	CreateSession(ctx context.Context, session domain.ParkingSession) (*domain.ParkingSession, error)
+	CreateSession(ctx context.Context, session domain.Session) (*domain.Session, error)
 	// CloseSession sets the exit time for a parking session.
 	CloseSession(
 		ctx context.Context,
 		stateNumber string,
 		closedAt time.Time,
 		parkingID uuid.UUID,
-	) (*domain.ParkingSession, error)
+	) (*domain.Session, error)
 	// GetSessionsByCarNumber returns parking sessions by the car state number.
 	GetSessionsByCarNumber(
 		ctx context.Context,
 		stateNumber string,
 		parkingID uuid.UUID,
-	) ([]domain.ParkingSession, error)
-	// GetActiveSessionsByParking returns active parking sessions by the parking ID.
-	GetActiveSessionsByParking(ctx context.Context, parkingID uuid.UUID) ([]domain.ParkingSession, error)
+	) ([]domain.Session, error)
+	// GetActiveSessionsByParking returns active parking sessions by the session ID.
+	GetActiveSessionsByParking(ctx context.Context, parkingID uuid.UUID) ([]domain.Session, error)
 }
 
-// service provides business logic for parking.
+// service provides business logic for session.
 type service struct {
 	logger      *zerolog.Logger
 	parkingRepo Repository
 }
 
-// New creates service for parking.
+// New creates service for session.
 func New(
 	logger *zerolog.Logger,
 	parkingRepo Repository,
@@ -49,14 +49,14 @@ func New(
 	}
 }
 
-// OpenSession creates a parking session when a car enters the parking.
+// OpenSession creates a parking session when a car enters the session.
 func (s *service) OpenSession(
 	ctx context.Context,
 	stateNumber string,
 	openedAt time.Time,
 	parkingID uuid.UUID,
-) (*domain.ParkingSession, error) {
-	const op = "service.parking.OpenSession"
+) (*domain.Session, error) {
+	const op = "service.session.OpenSession"
 
 	log := s.logger.With().
 		Str("op", op).
@@ -65,7 +65,7 @@ func (s *service) OpenSession(
 		Str("opened_at", openedAt.Format(time.RFC3339)).
 		Logger()
 
-	session := domain.ParkingSession{
+	session := domain.Session{
 		ID:          uuid.New(),
 		ParkingID:   parkingID,
 		StateNumber: stateNumber,
@@ -82,14 +82,14 @@ func (s *service) OpenSession(
 	return result, nil
 }
 
-// CloseSession finishes a parking session when a car exits the parking.
+// CloseSession finishes a parking session when a car exits the session.
 func (s *service) CloseSession(
 	ctx context.Context,
 	stateNumber string,
 	closedAt time.Time,
 	parkingID uuid.UUID,
-) (*domain.ParkingSession, error) {
-	const op = "service.parking.CloseSession"
+) (*domain.Session, error) {
+	const op = "service.session.CloseSession"
 
 	log := s.logger.With().
 		Str("op", op).
@@ -113,8 +113,8 @@ func (s *service) GetSessionsByCarNumber(
 	ctx context.Context,
 	stateNumber string,
 	parkingID uuid.UUID,
-) ([]domain.ParkingSession, error) {
-	const op = "service.parking.GetSessionsByCarNumber"
+) ([]domain.Session, error) {
+	const op = "service.session.GetSessionsByCarNumber"
 
 	log := s.logger.With().
 		Str("op", op).
@@ -132,12 +132,12 @@ func (s *service) GetSessionsByCarNumber(
 	return sessions, nil
 }
 
-// GetActiveSessionsByParking finds active parking sessions by the parking ID.
+// GetActiveSessionsByParking finds active parking sessions by the session ID.
 func (s *service) GetActiveSessionsByParking(
 	ctx context.Context,
 	parkingID uuid.UUID,
-) ([]domain.ParkingSession, error) {
-	const op = "service.parking.GetActiveSessionsByParking"
+) ([]domain.Session, error) {
+	const op = "service.session.GetActiveSessionsByParking"
 
 	log := s.logger.With().
 		Str("op", op).
@@ -154,9 +154,9 @@ func (s *service) GetActiveSessionsByParking(
 	return sessions, nil
 }
 
-// CalculatePrice calculates a parking price.
+// CalculatePrice calculates a session price.
 func (s *service) CalculatePrice(ctx context.Context, stateNumber string, parkingID uuid.UUID) (int64, error) {
-	const op = "service.parking.CalculatePrice"
+	const op = "service.session.CalculatePrice"
 
 	// TODO: implement after schedule manager implementation
 

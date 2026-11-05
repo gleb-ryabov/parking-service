@@ -18,7 +18,7 @@ type repository struct {
 	db *gorm.DB
 }
 
-// New creates repository for parking.
+// New creates repository for session.
 func New(db *gorm.DB) *repository {
 	return &repository{
 		db: db,
@@ -26,8 +26,8 @@ func New(db *gorm.DB) *repository {
 }
 
 // CreateSession makes parking session in DB.
-func (r *repository) CreateSession(ctx context.Context, session domain.ParkingSession) (*domain.ParkingSession, error) {
-	const op = "repository.parking.gorm.CreateSession"
+func (r *repository) CreateSession(ctx context.Context, session domain.Session) (*domain.Session, error) {
+	const op = "repository.session.gorm.CreateSession"
 
 	if err := r.db.WithContext(ctx).Create(&session).Error; err != nil {
 		return nil, gormrepo.MapError(err, op)
@@ -42,10 +42,10 @@ func (r *repository) CloseSession(
 	stateNumber string,
 	closedAt time.Time,
 	parkingID uuid.UUID,
-) (*domain.ParkingSession, error) {
-	const op = "repository.parking.gorm.CloseSession"
+) (*domain.Session, error) {
+	const op = "repository.session.gorm.CloseSession"
 
-	var session domain.ParkingSession
+	var session domain.Session
 
 	result := r.db.WithContext(ctx).
 		Clauses(clause.Returning{}).
@@ -71,10 +71,10 @@ func (r *repository) GetSessionsByCarNumber(
 	ctx context.Context,
 	stateNumber string,
 	parkingID uuid.UUID,
-) ([]domain.ParkingSession, error) {
-	const op = "repository.parking.gorm.GetSessionsByCarNumber"
+) ([]domain.Session, error) {
+	const op = "repository.session.gorm.GetSessionsByCarNumber"
 
-	var sessions []domain.ParkingSession
+	var sessions []domain.Session
 
 	if err := r.db.WithContext(ctx).
 		Where("state_number = ? AND parking_id = ?", stateNumber, parkingID).
@@ -85,14 +85,14 @@ func (r *repository) GetSessionsByCarNumber(
 	return sessions, nil
 }
 
-// GetActiveSessionsByParking returns active parking sessions by the parking ID.
+// GetActiveSessionsByParking returns active parking sessions by the session ID.
 func (r *repository) GetActiveSessionsByParking(
 	ctx context.Context,
 	parkingID uuid.UUID,
-) ([]domain.ParkingSession, error) {
-	const op = "repository.parking.gorm.GetActiveSessionsByParking"
+) ([]domain.Session, error) {
+	const op = "repository.session.gorm.GetActiveSessionsByParking"
 
-	var sessions []domain.ParkingSession
+	var sessions []domain.Session
 
 	if err := r.db.WithContext(ctx).
 		Where("parking_id = ? AND exited_at IS NULL", parkingID).

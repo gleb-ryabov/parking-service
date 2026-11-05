@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.2
 // - protoc             v7.36.0
-// source: proto/parking/parking.proto
+// source: proto/session/session.proto
 
 package parkingv1
 
@@ -19,11 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Parking_Enter_FullMethodName             = "/parking.Parking/Enter"
-	Parking_Exit_FullMethodName              = "/parking.Parking/Exit"
-	Parking_CalculatePrice_FullMethodName    = "/parking.Parking/CalculatePrice"
-	Parking_GetCarSessions_FullMethodName    = "/parking.Parking/GetCarSessions"
-	Parking_GetActiveSessions_FullMethodName = "/parking.Parking/GetActiveSessions"
+	Parking_Enter_FullMethodName             = "/session.Parking/Enter"
+	Parking_Exit_FullMethodName              = "/session.Parking/Exit"
+	Parking_CalculatePrice_FullMethodName    = "/session.Parking/CalculatePrice"
+	Parking_GetCarSessions_FullMethodName    = "/session.Parking/GetCarSessions"
+	Parking_GetActiveSessions_FullMethodName = "/session.Parking/GetActiveSessions"
 )
 
 // ParkingClient is the client API for Parking service.
@@ -248,7 +248,7 @@ type Parking_GetActiveSessionsServer = grpc.ServerStreamingServer[ParkingSession
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Parking_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "parking.Parking",
+	ServiceName: "session.Parking",
 	HandlerType: (*ParkingServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -276,5 +276,5 @@ var Parking_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: "proto/parking/parking.proto",
+	Metadata: "proto/session/session.proto",
 }

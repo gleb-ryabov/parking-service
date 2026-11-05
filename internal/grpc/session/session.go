@@ -1,4 +1,4 @@
-package parking
+package session
 
 import (
 	"context"
@@ -14,32 +14,32 @@ import (
 	grpcsvc "parking/internal/grpc"
 )
 
-// Service defines parking business operations.
+// Service defines session business operations.
 type Service interface {
-	// OpenSession creates a parking session when a car enters the parking.
+	// OpenSession creates a parking session when a car enters the session.
 	OpenSession(
 		ctx context.Context,
 		stateNumber string,
 		openedAt time.Time,
 		parkingID uuid.UUID,
-	) (*domain.ParkingSession, error)
-	// CloseSession finishes a parking session when a car exits the parking.
+	) (*domain.Session, error)
+	// CloseSession finishes a parking session when a car exits the session.
 	CloseSession(
 		ctx context.Context,
 		stateNumber string,
 		closedAt time.Time,
 		parkingID uuid.UUID,
-	) (*domain.ParkingSession, error)
-	// CalculatePrice calculates a parking price.
+	) (*domain.Session, error)
+	// CalculatePrice calculates a session price.
 	CalculatePrice(ctx context.Context, stateNumber string, parkingID uuid.UUID) (int64, error)
 	// GetSessionsByCarNumber finds parking sessions by the car state number.
 	GetSessionsByCarNumber(
 		ctx context.Context,
 		stateNumber string,
 		parkingID uuid.UUID,
-	) ([]domain.ParkingSession, error)
-	// GetActiveSessionsByParking finds active parking sessions by the parking ID.
-	GetActiveSessionsByParking(ctx context.Context, parkingID uuid.UUID) ([]domain.ParkingSession, error)
+	) ([]domain.Session, error)
+	// GetActiveSessionsByParking finds active parking sessions by the session ID.
+	GetActiveSessionsByParking(ctx context.Context, parkingID uuid.UUID) ([]domain.Session, error)
 }
 
 type serverAPI struct {
@@ -57,7 +57,7 @@ func Register(gRPC *grpc.Server, service Service) {
 
 // TODO: add validation for requests
 
-// Enter registers entry to the parking.
+// Enter registers entry to the session.
 func (s *serverAPI) Enter(
 	ctx context.Context,
 	req *parkingv1.EnterRequest,
@@ -75,7 +75,7 @@ func (s *serverAPI) Enter(
 	return toProtoSession(session), nil
 }
 
-// Exit registers exits from the parking.
+// Exit registers exits from the session.
 func (s *serverAPI) Exit(
 	ctx context.Context,
 	req *parkingv1.ExitRequest,
@@ -93,7 +93,7 @@ func (s *serverAPI) Exit(
 	return toProtoSession(session), nil
 }
 
-// CalculatePrice calculates the parking fee.
+// CalculatePrice calculates the session fee.
 func (s *serverAPI) CalculatePrice(
 	ctx context.Context,
 	req *parkingv1.CalculatePriceRequest,
@@ -133,7 +133,7 @@ func (s *serverAPI) GetCarSessions(
 	return nil
 }
 
-// GetActiveSessions finds and returns active sessions by the parking.
+// GetActiveSessions finds and returns active sessions by the session.
 func (s *serverAPI) GetActiveSessions(
 	req *parkingv1.GetActiveSessionsRequest,
 	stream grpc.ServerStreamingServer[parkingv1.ParkingSession],
@@ -155,7 +155,7 @@ func (s *serverAPI) GetActiveSessions(
 
 func (s *serverAPI) sendSessions(
 	stream grpc.ServerStreamingServer[parkingv1.ParkingSession],
-	sessions []domain.ParkingSession,
+	sessions []domain.Session,
 ) error {
 	for _, session := range sessions {
 		if err := stream.Send(toProtoSession(&session)); err != nil {

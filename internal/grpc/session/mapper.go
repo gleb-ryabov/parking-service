@@ -1,4 +1,4 @@
-package parking
+package session
 
 import (
 	"uuid"
@@ -9,8 +9,8 @@ import (
 	"parking/internal/domain"
 )
 
-// toProtoSession converts a domain ParkingSession to a protobuf ParkingSession.
-func toProtoSession(session *domain.ParkingSession) *parkingv1.ParkingSession {
+// toProtoSession converts a domain Session to a protobuf Session.
+func toProtoSession(session *domain.Session) *parkingv1.ParkingSession {
 	pb := &parkingv1.ParkingSession{
 		Id:          session.ID.String(),
 		ParkingId:   session.ParkingID.String(),
@@ -31,8 +31,8 @@ func toProtoSession(session *domain.ParkingSession) *parkingv1.ParkingSession {
 	return pb
 }
 
-// toDomainSession converts a protobuf ParkingSession to a domain ParkingSession.
-func toDomainSession(pb *parkingv1.ParkingSession) (*domain.ParkingSession, error) {
+// toDomainSession converts a protobuf Session to a domain Session.
+func toDomainSession(pb *parkingv1.ParkingSession) (*domain.Session, error) {
 	id, err := uuid.Parse(pb.GetId())
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func toDomainSession(pb *parkingv1.ParkingSession) (*domain.ParkingSession, erro
 		return nil, err
 	}
 
-	session := domain.ParkingSession{
+	session := domain.Session{
 		ID:          id,
 		ParkingID:   parkingID,
 		StateNumber: pb.GetStateNumber(),

@@ -7,11 +7,12 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	parkingRepo "parking/internal/repository/session/gorm"
+	parkingService "parking/internal/service/session"
+
 	grpcapp "parking/internal/app/grpc"
 	httpapp "parking/internal/app/http"
 	"parking/internal/config"
-	parkingRepo "parking/internal/repository/parking/gorm"
-	parkingService "parking/internal/service/parking"
 	"parking/internal/storage/postgres"
 	"parking/pkg/logger"
 )

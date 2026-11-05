@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog"
 	"google.golang.org/grpc"
 
-	parkinggrpc "parking/internal/grpc/parking"
+	parkinggrpc "parking/internal/grpc/session"
 )
 
 // App is struct for gRPC server.
