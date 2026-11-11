@@ -7,12 +7,15 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	parkingRepo "parking/internal/repository/session/gorm"
-	parkingService "parking/internal/service/session"
-
 	grpcapp "parking/internal/app/grpc"
 	httpapp "parking/internal/app/http"
 	"parking/internal/config"
+	parkingHandler "parking/internal/http/handler/parking"
+	"parking/internal/http/router"
+	parkingRepo "parking/internal/repository/parking/gorm"
+	sessionRepo "parking/internal/repository/session/gorm"
+	parkingService "parking/internal/service/parking"
+	sessionService "parking/internal/service/session"
 	"parking/internal/storage/postgres"
 	"parking/pkg/logger"
 )
@@ -47,17 +50,23 @@ func New(ctx context.Context) *App {
 	}
 	l.Info().Msg("db connected")
 
+	sessionR := sessionRepo.New(db.DB)
 	parkingR := parkingRepo.New(db.DB)
 
+	sessionS := sessionService.New(l, sessionR)
 	parkingS := parkingService.New(l, parkingR)
 
-	grpcApp := grpcapp.New(l, parkingS, cfg.GRPC.Port)
-	httpApp := httpapp.New(l, cfg.HTTP.Port)
+	parkingH := parkingHandler.New(l, cfg.HTTP.Timeout, parkingS)
+
+	grpcAppl := grpcapp.New(l, sessionS, cfg.GRPC.Port)
+	httpAppl := httpapp.New(l, cfg.HTTP.Port)
+
+	router.New(httpAppl.App, parkingH).Setup()
 
 	return &App{
 		log:     l,
-		httpApp: httpApp,
-		grpcApp: grpcApp,
+		httpApp: httpAppl,
+		grpcApp: grpcAppl,
 	}
 }
 

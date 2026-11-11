@@ -18,7 +18,8 @@ type Config struct {
 
 // HTTPConfig represents HTTP config.
 type HTTPConfig struct {
-	Port int `yaml:"port"`
+	Port    int           `yaml:"port"`
+	Timeout time.Duration `yaml:"timeout"`
 }
 
 // GRPCConfig represents GRPC config.

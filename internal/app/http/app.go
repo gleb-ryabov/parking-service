@@ -12,8 +12,9 @@ import (
 
 // App is struct for HTTP server.
 type App struct {
+	App *gin.Engine
+
 	log        *zerolog.Logger
-	app        *gin.Engine
 	httpServer *http.Server
 }
 
@@ -31,8 +32,8 @@ func New(
 	}
 
 	return &App{
+		App:        app,
 		log:        log,
-		app:        app,
 		httpServer: httpServer,
 	}
 }

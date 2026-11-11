@@ -6,6 +6,7 @@ grpc:
 
 http:
   port: 8090
+  timeout: 10s
 
 log:
   level: info

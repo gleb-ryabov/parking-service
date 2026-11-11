@@ -22,14 +22,15 @@ var (
 	ErrInternal = errors.New("internal error")
 )
 
-// MapError maps repository errors to service errors.
+// MapError maps and logs errors to service errors.
 func MapError(err error, l *zerolog.Logger, msg string) error {
 	if err == nil {
 		return nil
 	}
 
-	var serviceErr error
+	l.Error().Err(err).Msg(msg)
 
+	var serviceErr error
 	switch {
 	case errors.Is(err, repository.ErrNotFound):
 		serviceErr = ErrNotFound
