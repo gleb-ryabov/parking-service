@@ -11,10 +11,13 @@ import (
 	httpapp "parking/internal/app/http"
 	"parking/internal/config"
 	parkingHandler "parking/internal/http/handler/parking"
+	scheduleHandler "parking/internal/http/handler/schedule"
 	"parking/internal/http/router"
 	parkingRepo "parking/internal/repository/parking/gorm"
+	scheduleRepo "parking/internal/repository/schedule/gorm"
 	sessionRepo "parking/internal/repository/session/gorm"
 	parkingService "parking/internal/service/parking"
+	scheduleService "parking/internal/service/schedule"
 	sessionService "parking/internal/service/session"
 	"parking/internal/storage/postgres"
 	"parking/pkg/logger"
@@ -52,16 +55,19 @@ func New(ctx context.Context) *App {
 
 	sessionR := sessionRepo.New(db.DB)
 	parkingR := parkingRepo.New(db.DB)
+	scheduleR := scheduleRepo.New(db.DB)
 
 	sessionS := sessionService.New(l, sessionR)
 	parkingS := parkingService.New(l, parkingR)
+	scheduleS := scheduleService.New(l, scheduleR)
 
 	parkingH := parkingHandler.New(l, cfg.HTTP.Timeout, parkingS)
+	scheduleH := scheduleHandler.New(l, cfg.HTTP.Timeout, scheduleS)
 
 	grpcAppl := grpcapp.New(l, sessionS, cfg.GRPC.Port)
 	httpAppl := httpapp.New(l, cfg.HTTP.Port)
 
-	router.New(httpAppl.App, parkingH).Setup()
+	router.New(httpAppl.App, parkingH, scheduleH).Setup()
 
 	return &App{
 		log:     l,

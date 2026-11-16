@@ -16,6 +16,10 @@ var (
 	ErrInvalidParameter = errors.New("invalid parameter")
 	// ErrInvalidUUID is returned when UUID is invalid.
 	ErrInvalidUUID = errors.New("invalid uuid")
+	// ErrInvalidDate is returned when date is invalid.
+	ErrInvalidDate = errors.New("invalid date")
+	// ErrInvalidTime is returned when time is invalid.
+	ErrInvalidTime = errors.New("invalid time")
 	// ErrInternalServerError is returned when an internal server error occurs.
 	ErrInternalServerError = errors.New("internal server error")
 )
@@ -37,6 +41,10 @@ func RespondError(c *gin.Context, err error, defaultCode int, defaultMessage str
 		resp.Respond(c, http.StatusBadRequest, resp.Error(ErrInvalidParameter))
 	case errors.Is(err, ErrInvalidUUID):
 		resp.Respond(c, http.StatusBadRequest, resp.Error(ErrInvalidUUID))
+	case errors.Is(err, ErrInvalidDate):
+		resp.Respond(c, http.StatusBadRequest, resp.Error(ErrInvalidDate))
+	case errors.Is(err, ErrInvalidTime):
+		resp.Respond(c, http.StatusBadRequest, resp.Error(ErrInvalidTime))
 	default:
 		resp.Respond(c, defaultCode, resp.Error(fmt.Errorf("%s", defaultMessage)))
 	}

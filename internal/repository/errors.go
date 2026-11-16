@@ -25,4 +25,6 @@ var (
 	ErrUnsupportedDriver = errors.New("unsupported driver")
 	// ErrNotImplemented is returned when operation is not implemented.
 	ErrNotImplemented = errors.New("not implemented")
+	// ErrScheduleIntersection indicates that the schedule overlaps with an existing active schedule.
+	ErrScheduleIntersection = errors.New("schedule intersection")
 )

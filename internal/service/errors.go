@@ -36,7 +36,7 @@ func MapError(err error, l *zerolog.Logger, msg string) error {
 		serviceErr = ErrNotFound
 	case errors.Is(err, repository.ErrAlreadyExists):
 		serviceErr = ErrAlreadyExists
-	case errors.Is(err, repository.ErrConstraintViolated):
+	case errors.Is(err, repository.ErrConstraintViolated), errors.Is(err, repository.ErrScheduleIntersection):
 		serviceErr = ErrConstraintViolated
 	case errors.Is(err, repository.ErrInvalidData):
 		serviceErr = ErrInvalidData
