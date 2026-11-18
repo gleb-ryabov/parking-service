@@ -30,6 +30,12 @@ type Repository interface {
 	) ([]domain.Session, error)
 	// GetActiveSessionsByParking returns active parking sessions by the session ID.
 	GetActiveSessionsByParking(ctx context.Context, parkingID uuid.UUID) ([]domain.Session, error)
+	// GetPriceByCarInParking returns parking cost by state number and parking ID.
+	GetPriceByCarInParking(
+		ctx context.Context,
+		stateNumber string,
+		parkingID uuid.UUID,
+	) (int64, error)
 }
 
 // service provides business logic for session.
@@ -158,7 +164,18 @@ func (s *service) GetActiveSessionsByParking(
 func (s *service) CalculatePrice(ctx context.Context, stateNumber string, parkingID uuid.UUID) (int64, error) {
 	const op = "service.session.CalculatePrice"
 
-	// TODO: implement after schedule manager implementation
+	log := s.logger.With().
+		Str("op", op).
+		Str("state_number", stateNumber).
+		Str("parking_id", parkingID.String()).
+		Logger()
 
-	return 0, nil
+	cost, err := s.parkingRepo.GetPriceByCarInParking(ctx, stateNumber, parkingID)
+	if err != nil {
+		return 0, svc.MapError(err, &log, "failed to calculate cost")
+	}
+
+	log.Debug().Msg("parking sessions calculated")
+
+	return cost, nil
 }

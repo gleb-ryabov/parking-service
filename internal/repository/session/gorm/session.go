@@ -102,3 +102,75 @@ func (r *repository) GetActiveSessionsByParking(
 
 	return sessions, nil
 }
+
+// GetPriceByCarInParking returns parking cost by state number and parking ID.
+//
+//nolint:funlen
+func (r *repository) GetPriceByCarInParking(
+	ctx context.Context,
+	stateNumber string,
+	parkingID uuid.UUID,
+) (int64, error) {
+	const op = "repository.session.gorm.GetPriceByCarInParking"
+
+	const query = `
+        WITH prepared AS(
+			SELECT
+				ps.id AS session_id,
+				sc.id AS schedule_id,
+				sc.cost,
+						SUM(
+								EXTRACT(EPOCH FROM (
+									LEAST(
+											COALESCE(ps.exited_at, NOW()),
+											d.day + sc.end_time
+												+ CASE
+													  WHEN sc.end_time <= sc.start_time
+														  THEN INTERVAL '1 day'
+													  ELSE INTERVAL '0'
+												END
+									)
+										-
+									GREATEST(
+											ps.entered_at,
+											d.day + sc.start_time
+									)
+									)) / 60
+						) AS total_minutes
+			FROM parking_sessions ps
+					 JOIN schedules sc
+						  ON sc.parking_id = ps.parking_id
+					 CROSS JOIN LATERAL generate_series(
+					GREATEST(ps.entered_at::date, sc.valid_from)::timestamp,
+					LEAST(COALESCE(ps.exited_at, NOW())::date, sc.valid_to)::timestamp,
+					INTERVAL '1 day'
+										) AS d(day)
+			WHERE
+				EXTRACT(ISODOW FROM d.day)::integer = ANY(sc.week_days)
+			  AND ps.entered_at < (
+				d.day + sc.end_time
+					+ CASE
+						  WHEN sc.end_time <= sc.start_time
+							  THEN INTERVAL '1 day'
+						  ELSE INTERVAL '0'
+					END
+				)
+			  AND COALESCE(ps.exited_at, NOW()) > (d.day + sc.start_time)
+			  AND ps.paid = false
+			  AND ps.parking_id = ?
+			  AND ps.state_number = ?
+			GROUP BY ps.id, sc.id)
+			SELECT
+				COALESCE(SUM(CEIL(total_minutes / 60) * cost), 0) AS price
+			FROM prepared
+    `
+	var price int64
+
+	if err := r.db.WithContext(ctx).
+		Raw(query, parkingID, stateNumber).
+		Scan(&price).Error; err != nil {
+		return 0, gormrepo.MapError(err, op)
+	}
+
+	return price, nil
+}
