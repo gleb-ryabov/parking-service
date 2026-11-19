@@ -1,0 +1,405 @@
+definitions:
+  domain.Parking:
+    properties:
+      address:
+        type: string
+      capacity:
+        type: integer
+      code:
+        type: string
+      id:
+        type: string
+    type: object
+  domain.Schedule:
+    properties:
+      active:
+        type: boolean
+      cost:
+        format: int64
+        type: integer
+      endTime:
+        description: End time of the day.
+        type: string
+      id:
+        type: string
+      parkingID:
+        type: string
+      startTime:
+        description: Start time of the day.
+        type: string
+      validFrom:
+        description: Start date of the schedule validity period.
+        type: string
+      validTo:
+        description: End date of the schedule validity period.
+        type: string
+      weekDays:
+        items:
+          type: integer
+        type: array
+    type: object
+  dto.ParkingRequest:
+    properties:
+      address:
+        example: 123 Main St, City
+        type: string
+      capacity:
+        example: 100
+        minimum: 1
+        type: integer
+      code:
+        example: PARK-001
+        type: string
+    required:
+    - address
+    - capacity
+    - code
+    type: object
+  dto.ScheduleRequest:
+    properties:
+      active:
+        example: true
+        type: boolean
+      cost:
+        example: 50000
+        minimum: 0
+        type: integer
+      end_time:
+        example: "20:00:00"
+        type: string
+      parking_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      start_time:
+        example: "08:00:00"
+        type: string
+      valid_from:
+        example: "2024-01-01"
+        type: string
+      valid_to:
+        example: "2024-12-31"
+        type: string
+      week_days:
+        example:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        items:
+          type: integer
+        maxItems: 7
+        minItems: 1
+        type: array
+    required:
+    - cost
+    - end_time
+    - parking_id
+    - start_time
+    - valid_from
+    - week_days
+    type: object
+  response.Response:
+    properties:
+      data:
+        description: Data response
+      error:
+        description: Error if response is error
+        example: ""
+        type: string
+      status:
+        description: Response status
+        example: OK
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/parking:
+    get:
+      description: Retrieves a list of parking facilities, optionally filtered by
+        code and/or address.
+      parameters:
+      - description: Filter by parking code
+        in: query
+        name: code
+        type: string
+      - description: Filter by parking address
+        in: query
+        name: address
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of parkings
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/domain.Parking'
+                  type: array
+              type: object
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: List parkings
+      tags:
+      - Parking
+    post:
+      consumes:
+      - application/json
+      description: Creates a new parking facility with the provided code, address,
+        and capacity.
+      parameters:
+      - description: Parking creation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ParkingRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Parking created successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.Parking'
+              type: object
+        "400":
+          description: Invalid request parameters
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Create a new parking
+      tags:
+      - Parking
+  /api/parking/{id}:
+    delete:
+      description: Permanently deletes a parking facility by its ID.
+      parameters:
+      - description: Parking ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Parking deleted successfully, returns parking ID
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Invalid parking ID
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Delete a parking
+      tags:
+      - Parking
+    put:
+      consumes:
+      - application/json
+      description: Updates the code, address, and/or capacity of an existing parking
+        facility.
+      parameters:
+      - description: Parking ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Parking update request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ParkingRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Parking updated successfully, returns parking ID
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Invalid parking ID or request parameters
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Update an existing parking
+      tags:
+      - Parking
+  /api/schedule:
+    get:
+      description: Retrieves all schedules for a specific parking facility, optionally
+        filtered by active status.
+      parameters:
+      - description: Parking ID (UUID)
+        in: query
+        name: parking_id
+        required: true
+        type: string
+      - description: Filter by active status (true/false)
+        in: query
+        name: active
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of schedules
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/domain.Schedule'
+                  type: array
+              type: object
+        "400":
+          description: Invalid parking_id or active parameter
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: List schedules for a parking
+      tags:
+      - Schedule
+    post:
+      consumes:
+      - application/json
+      description: Creates a new parking schedule with the specified time range, days,
+        and pricing.
+      parameters:
+      - description: Schedule creation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ScheduleRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Schedule created successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.Schedule'
+              type: object
+        "400":
+          description: Invalid request parameters
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Create a new schedule
+      tags:
+      - Schedule
+  /api/schedule/{id}:
+    delete:
+      description: Permanently deletes a parking schedule by its ID.
+      parameters:
+      - description: Schedule ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Schedule deleted successfully, returns schedule ID
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Invalid schedule ID
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Delete a schedule
+      tags:
+      - Schedule
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing parking schedule with new time range, days,
+        and/or pricing.
+      parameters:
+      - description: Schedule ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Schedule update request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ScheduleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Schedule updated successfully, returns schedule ID
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Invalid schedule ID or request parameters
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Update an existing schedule
+      tags:
+      - Schedule
+swagger: "2.0"

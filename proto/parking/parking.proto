@@ -6,50 +6,144 @@ package parking;
 
 option go_package = "parking.v1;parkingv1";
 
+/**
+ * Parking service manages parking sessions for vehicles.
+ * Provides operations for vehicle entry/exit, price calculation, and session queries.
+ */
 service Parking {
-    rpc Enter (EnterRequest) returns (ParkingSession);
-    rpc Exit (ExitRequest) returns (ParkingSession);
-    rpc CalculatePrice(CalculatePriceRequest) returns (CalculatePriceResponse);
-    rpc GetCarSessions (GetCarSessionsRequest) returns (stream ParkingSession);
-    rpc GetActiveSessions(GetActiveSessionsRequest) returns (stream ParkingSession);
+  /**
+   * Registers a vehicle entry into the parking facility.
+   * Creates a new parking session with the provided vehicle state number,
+   * entry timestamp, and parking facility ID.
+   *
+   * @param request Contains state_number, entered_at, and parking_id.
+   * @return The created ParkingSession with session ID, entry time, and initial state.
+   * @throws NOT_FOUND if the parking facility does not exist.
+   * @throws ALREADY_EXISTS if the vehicle already has an active session in this parking.
+   * @throws INVALID_ARGUMENT if the request parameters are invalid.
+   */
+  rpc Enter (EnterRequest) returns (ParkingSession);
+
+  /**
+   * Registers a vehicle exit from the parking facility.
+   * Closes the active parking session for the specified vehicle and parking facility,
+   * calculates the final cost based on the applicable schedule.
+   *
+   * @param request Contains state_number, exited_at, and parking_id.
+   * @return The completed ParkingSession with exit time and calculated cost.
+   * @throws NOT_FOUND if no active session exists for the vehicle in this parking.
+   * @throws INVALID_ARGUMENT if the request parameters are invalid.
+   */
+  rpc Exit (ExitRequest) returns (ParkingSession);
+
+  /**
+   * Calculates the current parking cost for a vehicle without closing the session.
+   * Computes the cost based on the elapsed time since entry and the applicable schedule.
+   *
+   * @param request Contains state_number and parking_id.
+   * @return CalculatePriceResponse with the cost in kopecks.
+   * @throws NOT_FOUND if no active session exists for the vehicle in this parking.
+   * @throws INVALID_ARGUMENT if the request parameters are invalid.
+   */
+  rpc CalculatePrice (CalculatePriceRequest) returns (CalculatePriceResponse);
+
+  /**
+   * Retrieves all parking sessions for a specific vehicle in a parking facility.
+   * Returns a stream of ParkingSession objects matching the vehicle state number.
+   *
+   * @param request Contains state_number and parking_id.
+   * @return Stream of ParkingSession objects (historical and active).
+   * @throws INVALID_ARGUMENT if the request parameters are invalid.
+   */
+  rpc GetCarSessions (GetCarSessionsRequest) returns (stream ParkingSession);
+
+  /**
+   * Retrieves all currently active parking sessions for a parking facility.
+   * Returns a stream of ParkingSession objects for vehicles currently parked.
+   *
+   * @param request Contains parking_id.
+   * @return Stream of active ParkingSession objects.
+   * @throws INVALID_ARGUMENT if the parking_id is invalid.
+   */
+  rpc GetActiveSessions (GetActiveSessionsRequest) returns (stream ParkingSession);
 }
 
+/**
+ * Request to register a vehicle entry into a parking facility.
+ */
 message EnterRequest {
-    string state_number = 1;  // Car state number.
-    google.protobuf.Timestamp entered_at = 2;  // Time when the car entered the parking.
-    string parking_id = 3; // Parking ID.
+  // Vehicle state number (license plate).
+  string state_number = 1;
+  // Timestamp when the vehicle entered the parking facility.
+  google.protobuf.Timestamp entered_at = 2;
+  // UUID of the parking facility.
+  string parking_id = 3;
 }
 
-message ExitRequest{
-    string state_number = 1;  // Car state number.
-    google.protobuf.Timestamp exited_at = 2;  // Time when the car exited the parking.
-    string parking_id = 3; // Parking ID.
+/**
+ * Request to register a vehicle exit from a parking facility.
+ */
+message ExitRequest {
+  // Vehicle state number (license plate).
+  string state_number = 1;
+  // Timestamp when the vehicle exited the parking facility.
+  google.protobuf.Timestamp exited_at = 2;
+  // UUID of the parking facility.
+  string parking_id = 3;
 }
 
-message CalculatePriceRequest{
-    string state_number = 1;  // Car state number.
-    string parking_id = 2; // Parking ID.
+/**
+ * Request to calculate the current parking cost for a vehicle.
+ */
+message CalculatePriceRequest {
+  // Vehicle state number (license plate).
+  string state_number = 1;
+  // UUID of the parking facility.
+  string parking_id = 2;
 }
 
-message CalculatePriceResponse{
-    int64 cost = 1; // Cost parking in kopecks.
+/**
+ * Response containing the calculated parking cost.
+ */
+message CalculatePriceResponse {
+  // Cost in kopecks (1/100 of the base currency unit).
+  int64 cost = 1;
 }
 
-message GetCarSessionsRequest{
-    string state_number = 1;  // Car state number.
-    string parking_id = 2; // Parking ID.
+/**
+ * Request to retrieve parking sessions for a specific vehicle.
+ */
+message GetCarSessionsRequest {
+  // Vehicle state number (license plate).
+  string state_number = 1;
+  // UUID of the parking facility.
+  string parking_id = 2;
 }
 
-message GetActiveSessionsRequest{
-    string parking_id = 1; // Parking ID.
+/**
+ * Request to retrieve active parking sessions for a parking facility.
+ */
+message GetActiveSessionsRequest {
+  // UUID of the parking facility.
+  string parking_id = 1;
 }
 
+/**
+ * Represents a parking session for a vehicle.
+ */
 message ParkingSession {
-    string id = 1; // Session ID.
-    string parking_id = 2; // Parking ID.
-    string state_number = 3; // Car state number.
-    google.protobuf.Timestamp entered_at = 4; // Time when the car entered the parking.
-    google.protobuf.Timestamp exited_at = 5;  // Time when the car exited the parking.
-    int64 cost = 6; // Cost parking in kopecks.
-    bool paid = 7; // Session is paid.
+  // Unique session identifier (UUID).
+  string id = 1;
+  // UUID of the parking facility.
+  string parking_id = 2;
+  // Vehicle state number (license plate).
+  string state_number = 3;
+  // Timestamp when the vehicle entered the parking facility.
+  google.protobuf.Timestamp entered_at = 4;
+  // Timestamp when the vehicle exited the parking facility (null if session is active).
+  google.protobuf.Timestamp exited_at = 5;
+  // Total cost of the session in kopecks (0 if session is active or not yet calculated).
+  int64 cost = 6;
+  // Indicates whether the session has been paid for.
+  bool paid = 7;
 }

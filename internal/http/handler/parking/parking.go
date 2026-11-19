@@ -49,6 +49,16 @@ func New(
 }
 
 // CreateParking handles a request to create a new parking.
+// @Summary Create a new parking
+// @Description Creates a new parking facility with the provided code, address, and capacity.
+// @Tags Parking
+// @Accept json
+// @Produce json
+// @Param request body dto.ParkingRequest true "Parking creation request"
+// @Success 201 {object} response.Response{data=domain.Parking} "Parking created successfully"
+// @Failure 400 {object} response.Response "Invalid request parameters"
+// @Failure 500 {object} response.Response "Internal server error"
+// @Router /api/parking [post]
 func (h *Handler) CreateParking(c *gin.Context) {
 	const op = "http.handler.parking.CreateParking"
 
@@ -91,6 +101,17 @@ func (h *Handler) CreateParking(c *gin.Context) {
 }
 
 // UpdateParking handles a request to update a parking.
+// @Summary Update an existing parking
+// @Description Updates the code, address, and/or capacity of an existing parking facility.
+// @Tags Parking
+// @Accept json
+// @Produce json
+// @Param id path string true "Parking ID (UUID)"
+// @Param request body dto.ParkingRequest true "Parking update request"
+// @Success 200 {object} response.Response{data=string} "Parking updated successfully, returns parking ID"
+// @Failure 400 {object} response.Response "Invalid parking ID or request parameters"
+// @Failure 500 {object} response.Response "Internal server error"
+// @Router /api/parking/{id} [put]
 func (h *Handler) UpdateParking(c *gin.Context) {
 	const op = "http.handler.parking.UpdateParking"
 
@@ -147,6 +168,15 @@ func (h *Handler) UpdateParking(c *gin.Context) {
 }
 
 // DeleteParking handles a request to delete a parking.
+// @Summary Delete a parking
+// @Description Permanently deletes a parking facility by its ID.
+// @Tags Parking
+// @Produce json
+// @Param id path string true "Parking ID (UUID)"
+// @Success 200 {object} response.Response{data=string} "Parking deleted successfully, returns parking ID"
+// @Failure 400 {object} response.Response "Invalid parking ID"
+// @Failure 500 {object} response.Response "Internal server error"
+// @Router /api/parking/{id} [delete]
 func (h *Handler) DeleteParking(c *gin.Context) {
 	const op = "http.handler.parking.DeleteParking"
 
@@ -187,6 +217,15 @@ func (h *Handler) DeleteParking(c *gin.Context) {
 }
 
 // GetParkings handles a request to retrieve parkings.
+// @Summary List parkings
+// @Description Retrieves a list of parking facilities, optionally filtered by code and/or address.
+// @Tags Parking
+// @Produce json
+// @Param code query string false "Filter by parking code"
+// @Param address query string false "Filter by parking address"
+// @Success 200 {object} response.Response{data=[]domain.Parking} "List of parkings"
+// @Failure 500 {object} response.Response "Internal server error"
+// @Router /api/parking [get]
 func (h *Handler) GetParkings(c *gin.Context) {
 	const op = "http.handler.parking.GetParkings"
 

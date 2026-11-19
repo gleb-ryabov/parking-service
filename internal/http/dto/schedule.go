@@ -11,14 +11,14 @@ import (
 
 // ScheduleRequest request for create and update schedule.
 type ScheduleRequest struct {
-	ParkingID string  `json:"parking_id" binding:"required,uuid"`
-	Active    bool    `json:"active"`
-	ValidFrom string  `json:"valid_from" binding:"required"`
-	ValidTo   *string `json:"valid_to"`
-	StartTime string  `json:"start_time" binding:"required"`
-	EndTime   string  `json:"end_time" binding:"required"`
-	WeekDays  []int   `json:"week_days" binding:"required,min=1,max=7,dive,min=0,max=6"`
-	Cost      int64   `json:"cost" binding:"required,min=0"`
+	ParkingID string  `json:"parking_id" binding:"required,uuid" example:"550e8400-e29b-41d4-a716-446655440000"`
+	Active    bool    `json:"active" example:"true"`
+	ValidFrom string  `json:"valid_from" binding:"required" example:"2024-01-01"`
+	ValidTo   *string `json:"valid_to" example:"2024-12-31"`
+	StartTime string  `json:"start_time" binding:"required" example:"08:00:00"`
+	EndTime   string  `json:"end_time" binding:"required" example:"20:00:00"`
+	WeekDays  []int   `json:"week_days" binding:"required,min=1,max=7,dive,min=0,max=6" example:"1,2,3,4,5"`
+	Cost      int64   `json:"cost" binding:"required,min=0" example:"50000"`
 }
 
 // ToDomain converts DTO to domain model.

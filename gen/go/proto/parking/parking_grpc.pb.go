@@ -29,11 +29,56 @@ const (
 // ParkingClient is the client API for Parking service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// *
+// Parking service manages parking sessions for vehicles.
+// Provides operations for vehicle entry/exit, price calculation, and session queries.
 type ParkingClient interface {
+	//*
+	// Registers a vehicle entry into the parking facility.
+	// Creates a new parking session with the provided vehicle state number,
+	// entry timestamp, and parking facility ID.
+	//
+	// @param request Contains state_number, entered_at, and parking_id.
+	// @return The created ParkingSession with session ID, entry time, and initial state.
+	// @throws NOT_FOUND if the parking facility does not exist.
+	// @throws ALREADY_EXISTS if the vehicle already has an active session in this parking.
+	// @throws INVALID_ARGUMENT if the request parameters are invalid.
 	Enter(ctx context.Context, in *EnterRequest, opts ...grpc.CallOption) (*ParkingSession, error)
+	//*
+	// Registers a vehicle exit from the parking facility.
+	// Closes the active parking session for the specified vehicle and parking facility,
+	// calculates the final cost based on the applicable schedule.
+	//
+	// @param request Contains state_number, exited_at, and parking_id.
+	// @return The completed ParkingSession with exit time and calculated cost.
+	// @throws NOT_FOUND if no active session exists for the vehicle in this parking.
+	// @throws INVALID_ARGUMENT if the request parameters are invalid.
 	Exit(ctx context.Context, in *ExitRequest, opts ...grpc.CallOption) (*ParkingSession, error)
+	//*
+	// Calculates the current parking cost for a vehicle without closing the session.
+	// Computes the cost based on the elapsed time since entry and the applicable schedule.
+	//
+	// @param request Contains state_number and parking_id.
+	// @return CalculatePriceResponse with the cost in kopecks.
+	// @throws NOT_FOUND if no active session exists for the vehicle in this parking.
+	// @throws INVALID_ARGUMENT if the request parameters are invalid.
 	CalculatePrice(ctx context.Context, in *CalculatePriceRequest, opts ...grpc.CallOption) (*CalculatePriceResponse, error)
+	//*
+	// Retrieves all parking sessions for a specific vehicle in a parking facility.
+	// Returns a stream of ParkingSession objects matching the vehicle state number.
+	//
+	// @param request Contains state_number and parking_id.
+	// @return Stream of ParkingSession objects (historical and active).
+	// @throws INVALID_ARGUMENT if the request parameters are invalid.
 	GetCarSessions(ctx context.Context, in *GetCarSessionsRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ParkingSession], error)
+	//*
+	// Retrieves all currently active parking sessions for a parking facility.
+	// Returns a stream of ParkingSession objects for vehicles currently parked.
+	//
+	// @param request Contains parking_id.
+	// @return Stream of active ParkingSession objects.
+	// @throws INVALID_ARGUMENT if the parking_id is invalid.
 	GetActiveSessions(ctx context.Context, in *GetActiveSessionsRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ParkingSession], error)
 }
 
@@ -116,11 +161,56 @@ type Parking_GetActiveSessionsClient = grpc.ServerStreamingClient[ParkingSession
 // ParkingServer is the server API for Parking service.
 // All implementations must embed UnimplementedParkingServer
 // for forward compatibility.
+//
+// *
+// Parking service manages parking sessions for vehicles.
+// Provides operations for vehicle entry/exit, price calculation, and session queries.
 type ParkingServer interface {
+	//*
+	// Registers a vehicle entry into the parking facility.
+	// Creates a new parking session with the provided vehicle state number,
+	// entry timestamp, and parking facility ID.
+	//
+	// @param request Contains state_number, entered_at, and parking_id.
+	// @return The created ParkingSession with session ID, entry time, and initial state.
+	// @throws NOT_FOUND if the parking facility does not exist.
+	// @throws ALREADY_EXISTS if the vehicle already has an active session in this parking.
+	// @throws INVALID_ARGUMENT if the request parameters are invalid.
 	Enter(context.Context, *EnterRequest) (*ParkingSession, error)
+	//*
+	// Registers a vehicle exit from the parking facility.
+	// Closes the active parking session for the specified vehicle and parking facility,
+	// calculates the final cost based on the applicable schedule.
+	//
+	// @param request Contains state_number, exited_at, and parking_id.
+	// @return The completed ParkingSession with exit time and calculated cost.
+	// @throws NOT_FOUND if no active session exists for the vehicle in this parking.
+	// @throws INVALID_ARGUMENT if the request parameters are invalid.
 	Exit(context.Context, *ExitRequest) (*ParkingSession, error)
+	//*
+	// Calculates the current parking cost for a vehicle without closing the session.
+	// Computes the cost based on the elapsed time since entry and the applicable schedule.
+	//
+	// @param request Contains state_number and parking_id.
+	// @return CalculatePriceResponse with the cost in kopecks.
+	// @throws NOT_FOUND if no active session exists for the vehicle in this parking.
+	// @throws INVALID_ARGUMENT if the request parameters are invalid.
 	CalculatePrice(context.Context, *CalculatePriceRequest) (*CalculatePriceResponse, error)
+	//*
+	// Retrieves all parking sessions for a specific vehicle in a parking facility.
+	// Returns a stream of ParkingSession objects matching the vehicle state number.
+	//
+	// @param request Contains state_number and parking_id.
+	// @return Stream of ParkingSession objects (historical and active).
+	// @throws INVALID_ARGUMENT if the request parameters are invalid.
 	GetCarSessions(*GetCarSessionsRequest, grpc.ServerStreamingServer[ParkingSession]) error
+	//*
+	// Retrieves all currently active parking sessions for a parking facility.
+	// Returns a stream of ParkingSession objects for vehicles currently parked.
+	//
+	// @param request Contains parking_id.
+	// @return Stream of active ParkingSession objects.
+	// @throws INVALID_ARGUMENT if the parking_id is invalid.
 	GetActiveSessions(*GetActiveSessionsRequest, grpc.ServerStreamingServer[ParkingSession]) error
 	mustEmbedUnimplementedParkingServer()
 }

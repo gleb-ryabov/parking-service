@@ -5,10 +5,17 @@ tasks:
     desc: "generate proto files"
     cmds:
       - protoc -I . --go_out=./gen/go --go_opt=paths=source_relative --go-grpc_out=./gen/go --go-grpc_opt=paths=source_relative proto/parking/parking.proto
+
+  gen-swagger:
+    desc: "generate swagger documentation"
+    cmds:
+      - swag init -g cmd/parking/main.go -o docs --parseInternal
+
   run-local:
     desc: "run app with local config"
     cmds:
       - go run ./cmd/parking -config="config/local.yaml"
+
   run-migrate-local:
     desc: "run migrate with local config"
     cmds:

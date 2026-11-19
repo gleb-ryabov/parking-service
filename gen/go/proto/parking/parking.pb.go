@@ -22,11 +22,15 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Request to register a vehicle entry into a parking facility.
 type EnterRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	StateNumber   string                 `protobuf:"bytes,1,opt,name=state_number,json=stateNumber,proto3" json:"state_number,omitempty"` // Car state number.
-	EnteredAt     *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=entered_at,json=enteredAt,proto3" json:"entered_at,omitempty"`       // Time when the car entered the parking.
-	ParkingId     string                 `protobuf:"bytes,3,opt,name=parking_id,json=parkingId,proto3" json:"parking_id,omitempty"`       // Parking ID.
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Vehicle state number (license plate).
+	StateNumber string `protobuf:"bytes,1,opt,name=state_number,json=stateNumber,proto3" json:"state_number,omitempty"`
+	// Timestamp when the vehicle entered the parking facility.
+	EnteredAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=entered_at,json=enteredAt,proto3" json:"entered_at,omitempty"`
+	// UUID of the parking facility.
+	ParkingId     string `protobuf:"bytes,3,opt,name=parking_id,json=parkingId,proto3" json:"parking_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -82,11 +86,16 @@ func (x *EnterRequest) GetParkingId() string {
 	return ""
 }
 
+// *
+// Request to register a vehicle exit from a parking facility.
 type ExitRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	StateNumber   string                 `protobuf:"bytes,1,opt,name=state_number,json=stateNumber,proto3" json:"state_number,omitempty"` // Car state number.
-	ExitedAt      *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=exited_at,json=exitedAt,proto3" json:"exited_at,omitempty"`          // Time when the car exited the parking.
-	ParkingId     string                 `protobuf:"bytes,3,opt,name=parking_id,json=parkingId,proto3" json:"parking_id,omitempty"`       // Parking ID.
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Vehicle state number (license plate).
+	StateNumber string `protobuf:"bytes,1,opt,name=state_number,json=stateNumber,proto3" json:"state_number,omitempty"`
+	// Timestamp when the vehicle exited the parking facility.
+	ExitedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=exited_at,json=exitedAt,proto3" json:"exited_at,omitempty"`
+	// UUID of the parking facility.
+	ParkingId     string `protobuf:"bytes,3,opt,name=parking_id,json=parkingId,proto3" json:"parking_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -142,10 +151,14 @@ func (x *ExitRequest) GetParkingId() string {
 	return ""
 }
 
+// *
+// Request to calculate the current parking cost for a vehicle.
 type CalculatePriceRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	StateNumber   string                 `protobuf:"bytes,1,opt,name=state_number,json=stateNumber,proto3" json:"state_number,omitempty"` // Car state number.
-	ParkingId     string                 `protobuf:"bytes,2,opt,name=parking_id,json=parkingId,proto3" json:"parking_id,omitempty"`       // Parking ID.
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Vehicle state number (license plate).
+	StateNumber string `protobuf:"bytes,1,opt,name=state_number,json=stateNumber,proto3" json:"state_number,omitempty"`
+	// UUID of the parking facility.
+	ParkingId     string `protobuf:"bytes,2,opt,name=parking_id,json=parkingId,proto3" json:"parking_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -194,9 +207,12 @@ func (x *CalculatePriceRequest) GetParkingId() string {
 	return ""
 }
 
+// *
+// Response containing the calculated parking cost.
 type CalculatePriceResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Cost          int64                  `protobuf:"varint,1,opt,name=cost,proto3" json:"cost,omitempty"` // Cost parking in kopecks.
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Cost in kopecks (1/100 of the base currency unit).
+	Cost          int64 `protobuf:"varint,1,opt,name=cost,proto3" json:"cost,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -238,10 +254,14 @@ func (x *CalculatePriceResponse) GetCost() int64 {
 	return 0
 }
 
+// *
+// Request to retrieve parking sessions for a specific vehicle.
 type GetCarSessionsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	StateNumber   string                 `protobuf:"bytes,1,opt,name=state_number,json=stateNumber,proto3" json:"state_number,omitempty"` // Car state number.
-	ParkingId     string                 `protobuf:"bytes,2,opt,name=parking_id,json=parkingId,proto3" json:"parking_id,omitempty"`       // Parking ID.
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Vehicle state number (license plate).
+	StateNumber string `protobuf:"bytes,1,opt,name=state_number,json=stateNumber,proto3" json:"state_number,omitempty"`
+	// UUID of the parking facility.
+	ParkingId     string `protobuf:"bytes,2,opt,name=parking_id,json=parkingId,proto3" json:"parking_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -290,9 +310,12 @@ func (x *GetCarSessionsRequest) GetParkingId() string {
 	return ""
 }
 
+// *
+// Request to retrieve active parking sessions for a parking facility.
 type GetActiveSessionsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	ParkingId     string                 `protobuf:"bytes,1,opt,name=parking_id,json=parkingId,proto3" json:"parking_id,omitempty"` // Parking ID.
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// UUID of the parking facility.
+	ParkingId     string `protobuf:"bytes,1,opt,name=parking_id,json=parkingId,proto3" json:"parking_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -334,15 +357,24 @@ func (x *GetActiveSessionsRequest) GetParkingId() string {
 	return ""
 }
 
+// *
+// Represents a parking session for a vehicle.
 type ParkingSession struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`                                      // Session ID.
-	ParkingId     string                 `protobuf:"bytes,2,opt,name=parking_id,json=parkingId,proto3" json:"parking_id,omitempty"`       // Parking ID.
-	StateNumber   string                 `protobuf:"bytes,3,opt,name=state_number,json=stateNumber,proto3" json:"state_number,omitempty"` // Car state number.
-	EnteredAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=entered_at,json=enteredAt,proto3" json:"entered_at,omitempty"`       // Time when the car entered the parking.
-	ExitedAt      *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=exited_at,json=exitedAt,proto3" json:"exited_at,omitempty"`          // Time when the car exited the parking.
-	Cost          int64                  `protobuf:"varint,6,opt,name=cost,proto3" json:"cost,omitempty"`                                 // Cost parking in kopecks.
-	Paid          bool                   `protobuf:"varint,7,opt,name=paid,proto3" json:"paid,omitempty"`                                 // Session is paid.
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Unique session identifier (UUID).
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// UUID of the parking facility.
+	ParkingId string `protobuf:"bytes,2,opt,name=parking_id,json=parkingId,proto3" json:"parking_id,omitempty"`
+	// Vehicle state number (license plate).
+	StateNumber string `protobuf:"bytes,3,opt,name=state_number,json=stateNumber,proto3" json:"state_number,omitempty"`
+	// Timestamp when the vehicle entered the parking facility.
+	EnteredAt *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=entered_at,json=enteredAt,proto3" json:"entered_at,omitempty"`
+	// Timestamp when the vehicle exited the parking facility (null if session is active).
+	ExitedAt *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=exited_at,json=exitedAt,proto3" json:"exited_at,omitempty"`
+	// Total cost of the session in kopecks (0 if session is active or not yet calculated).
+	Cost int64 `protobuf:"varint,6,opt,name=cost,proto3" json:"cost,omitempty"`
+	// Indicates whether the session has been paid for.
+	Paid          bool `protobuf:"varint,7,opt,name=paid,proto3" json:"paid,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

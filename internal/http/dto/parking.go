@@ -6,9 +6,9 @@ import (
 
 // ParkingRequest request for create and update parking.
 type ParkingRequest struct {
-	Code     string `json:"code" binding:"required"`
-	Address  string `json:"address" binding:"required"`
-	Capacity int    `json:"capacity" binding:"required,min=1"`
+	Code     string `json:"code" binding:"required" example:"PARK-001"`
+	Address  string `json:"address" binding:"required" example:"123 Main St, City"`
+	Capacity int    `json:"capacity" binding:"required,min=1" example:"100"`
 }
 
 // ToDomain converts DTO to domain model.

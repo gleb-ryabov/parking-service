@@ -6,9 +6,9 @@ import (
 
 // Response consists of required fields for all responses.
 type Response struct {
-	Status string `json:"status"`          // Response status
-	Error  string `json:"error,omitempty"` // Error if response is error
-	Data   any    `json:"data"`            // Data response
+	Status string `json:"status" example:"OK"`        // Response status
+	Error  string `json:"error,omitempty" example:""` // Error if response is error
+	Data   any    `json:"data"`                       // Data response
 }
 
 const (

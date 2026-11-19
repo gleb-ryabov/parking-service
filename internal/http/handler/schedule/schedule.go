@@ -51,6 +51,16 @@ func New(
 }
 
 // CreateSchedule handles a request to create a new schedule.
+// @Summary Create a new schedule
+// @Description Creates a new parking schedule with the specified time range, days, and pricing.
+// @Tags Schedule
+// @Accept json
+// @Produce json
+// @Param request body dto.ScheduleRequest true "Schedule creation request"
+// @Success 201 {object} response.Response{data=domain.Schedule} "Schedule created successfully"
+// @Failure 400 {object} response.Response "Invalid request parameters"
+// @Failure 500 {object} response.Response "Internal server error"
+// @Router /api/schedule [post]
 func (h *Handler) CreateSchedule(c *gin.Context) {
 	const op = "http.handler.schedule.CreateSchedule"
 
@@ -92,6 +102,17 @@ func (h *Handler) CreateSchedule(c *gin.Context) {
 }
 
 // UpdateSchedule handles a request to update a schedule.
+// @Summary Update an existing schedule
+// @Description Updates an existing parking schedule with new time range, days, and/or pricing.
+// @Tags Schedule
+// @Accept json
+// @Produce json
+// @Param id path string true "Schedule ID (UUID)"
+// @Param request body dto.ScheduleRequest true "Schedule update request"
+// @Success 200 {object} response.Response{data=string} "Schedule updated successfully, returns schedule ID"
+// @Failure 400 {object} response.Response "Invalid schedule ID or request parameters"
+// @Failure 500 {object} response.Response "Internal server error"
+// @Router /api/schedule/{id} [put]
 func (h *Handler) UpdateSchedule(c *gin.Context) {
 	const op = "http.handler.schedule.UpdateSchedule"
 
@@ -144,6 +165,15 @@ func (h *Handler) UpdateSchedule(c *gin.Context) {
 }
 
 // DeleteSchedule handles a request to delete a schedule.
+// @Summary Delete a schedule
+// @Description Permanently deletes a parking schedule by its ID.
+// @Tags Schedule
+// @Produce json
+// @Param id path string true "Schedule ID (UUID)"
+// @Success 200 {object} response.Response{data=string} "Schedule deleted successfully, returns schedule ID"
+// @Failure 400 {object} response.Response "Invalid schedule ID"
+// @Failure 500 {object} response.Response "Internal server error"
+// @Router /api/schedule/{id} [delete]
 func (h *Handler) DeleteSchedule(c *gin.Context) {
 	const op = "http.handler.schedule.DeleteSchedule"
 
@@ -184,6 +214,16 @@ func (h *Handler) DeleteSchedule(c *gin.Context) {
 }
 
 // GetSchedules handles a request to retrieve schedules by parking_id.
+// @Summary List schedules for a parking
+// @Description Retrieves all schedules for a specific parking facility, optionally filtered by active status.
+// @Tags Schedule
+// @Produce json
+// @Param parking_id query string true "Parking ID (UUID)"
+// @Param active query boolean false "Filter by active status (true/false)"
+// @Success 200 {object} response.Response{data=[]domain.Schedule} "List of schedules"
+// @Failure 400 {object} response.Response "Invalid parking_id or active parameter"
+// @Failure 500 {object} response.Response "Internal server error"
+// @Router /api/schedule [get]
 func (h *Handler) GetSchedules(c *gin.Context) {
 	const op = "http.handler.schedule.GetSchedules"
 
